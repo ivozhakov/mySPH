@@ -1,0 +1,37 @@
+*
+!sph_libs/
+!sph_libs/**
+
+!examples/
+!examples/**
+
+# Ignore common output/build files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+*.pyc
+*.pyo
+__pycache__/
+build/
+dist/
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# Simulation output files (assuming common extensions)
+*.dat
+*.vtk
+*.vtu
+*.png
+*.jpg
+*.gif
+*.mp4
+output/
+frames/
