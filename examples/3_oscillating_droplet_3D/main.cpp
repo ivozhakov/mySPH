@@ -21,7 +21,7 @@ namespace fs = std::filesystem;
 
 int main() {
     // Define dimension
-    constexpr int Dim = 2;  // Change to 3 for 3D simulation
+    constexpr int Dim = 3;  // Change to 3 for 3D simulation
     Vector<Dim> zero{};
 
     // Simulation parameters (change these without affecting logic)
@@ -30,8 +30,7 @@ int main() {
     const double cs = 10.0;                // sound speed
     const double viscosity = 0.01;        // dynamic viscosity
     const double sigma = 0.072;            // surface tension
-    Vector<Dim> gravity = zero; // gravity acceleration
-    gravity[1] = -9.81;
+    const Vector<Dim> gravity = zero; // gravity acceleration
 
     const double box_length = 0.005;       // boundary box size
 
@@ -39,16 +38,15 @@ int main() {
     Vector<Dim> center = zero;
     center[1] = 2.0 * radius; // center.y = 2*radius;
 
-    const double dp = radius * std::sqrt(M_PI / N); // particle spacing 2D
-    //const double dp = radius * pow(4. * M_PI / 3. / N, 1./3.); // particle spacing 3D
+    //const double dp = radius * std::sqrt(M_PI / N); // particle spacing 2D
+    const double dp = radius * pow(4. * M_PI / 3. / N, 1./3.); // particle spacing 3D
     const double h = 1.3 * dp;             // smoothing length
 
     const double CFL = 0.25;                // Courant number
     const double sim_time = 0.1;           // total simulation time in seconds
     const int frames = 1000;               // number of output frames
 
-    Vector<Dim> initial_vel = zero; // initial velocity for all particles
-    initial_vel[1] = -0.5;
+    const Vector<Dim> initial_vel = zero; // initial velocity for all particles
 
     // Derived parameters
     const double max_dt = CFL * h / cs;
@@ -68,7 +66,7 @@ int main() {
 
     // Fill particles
     //fill_circle(center, radius, particles, N, density, h);
-    fill_ellipsoid(center, {radius, radius}, particles, N, density, h);
+    fill_ellipsoid(center, {radius * 1.2, radius / 1.2, radius / 1.2}, particles, N, density, h);
 
     // Set initial velocity
     for (auto& p : particles) {

@@ -5,8 +5,9 @@
 #include <vector>
 
 #include "particle.hpp"
-#include "vector2d.hpp"
+#include "vector.hpp"
 
-void find_neighbors(std::vector<particle>& particles, double h);
+template<int Dim>
+void find_neighbors(std::vector<Particle<Dim>>& particles, double h);
 
 #endif  // NEIGHBOR_FINDER_HPP

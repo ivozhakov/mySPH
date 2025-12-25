@@ -5,9 +5,9 @@
 #include <vector>
 
 #include "particle.hpp"
-#include "vector2d.hpp"
+#include "vector.hpp"
 
-void fill_circle(Vector2D center, double radius, std::vector<particle>& particles, int N, double density0, double h);
-void fill_ellipse(Vector2D center, double rx, double ry, std::vector<particle>& particles, int N, double density0, double h);
+template <int Dim>
+void fill_ellipsoid(Vector<Dim> center, std::array<double, Dim> radii, std::vector<Particle<Dim>>& particles, int N, double density0, double h);
 
 #endif  // PARTICLE_FILLER_HPP

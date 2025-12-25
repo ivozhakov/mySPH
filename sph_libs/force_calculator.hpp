@@ -5,12 +5,21 @@
 #include <vector>
 
 #include "particle.hpp"
-#include "vector2d.hpp"
+#include "vector.hpp"
 
-void compute_surface_tension_CSS(std::vector<particle>& particles, double sigma, double h);
-void compute_density(std::vector<particle>& particles, double density0);
-void density_normalization(std::vector<particle>& particles, double density0);
-void compute_pressure_forces(std::vector<particle>& particles, double cs, double density0, double h);
-void compute_viscous_forces(std::vector<particle>& particles, double viscosity, double h);
+template<int Dim>
+void compute_surface_tension_CSS(std::vector<Particle<Dim>>& particles, double sigma, double h);
+
+template<int Dim>
+void compute_density(std::vector<Particle<Dim>>& particles, double density0);
+
+template<int Dim>
+void density_normalization(std::vector<Particle<Dim>>& particles, double density0);
+
+template<int Dim>
+void compute_pressure_forces(std::vector<Particle<Dim>>& particles, double cs, double density0, double h);
+
+template<int Dim>
+void compute_viscous_forces(std::vector<Particle<Dim>>& particles, double viscosity, double h);
 
 #endif  // FORCE_CALCULATOR_HPP

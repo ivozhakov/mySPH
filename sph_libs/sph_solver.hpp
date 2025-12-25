@@ -5,31 +5,32 @@
 #include <vector>
 
 #include "particle.hpp"
-#include "vector2d.hpp"
+#include "vector.hpp"
 
+template<int Dim>
 class SPHSolver {
    private:
     double h;
     double dt;
     double density0;
-    double stiffness;
+    double cs;
     double viscosity;
     double sigma;
-    Vector2D gravity;
+    Vector<Dim> gravity;
     double box_length;
 
    public:
-    SPHSolver(double smoothing_length = 0.1, double time_step = 0.00001, double ref_density = 1000.0, double pressure_stiffness = 1000.0, double fluid_viscosity = 0.0, double surface_tension = 0.07,
-              Vector2D acceleration = {0.0, 0.0}, double box_size = 0.005);
+    SPHSolver(double smoothing_length = 0.1, double time_step = 0.00001, double ref_density = 1000.0, double cs = 10.0, double fluid_viscosity = 0.0, double surface_tension = 0.07,
+              Vector<Dim> acceleration = Vector<Dim>(), double box_size = 0.005);
 
-    void compute_forces(std::vector<particle>& particles);
-    void simulate_step(std::vector<particle>& particles);
+    void compute_forces(std::vector<Particle<Dim>>& particles);
+    void simulate_step(std::vector<Particle<Dim>>& particles);
 
     double get_smoothing_length() const;
     double get_time_step() const;
 
    private:
-    void apply_boundaries(std::vector<particle>& particles) const;
+    void apply_boundaries(std::vector<Particle<Dim>>& particles) const;
 };
 
 #endif  // SPH_SOLVER_HPP

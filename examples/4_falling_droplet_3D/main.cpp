@@ -21,7 +21,7 @@ namespace fs = std::filesystem;
 
 int main() {
     // Define dimension
-    constexpr int Dim = 2;  // Change to 3 for 3D simulation
+    constexpr int Dim = 3;  // Change to 3 for 3D simulation
     Vector<Dim> zero{};
 
     // Simulation parameters (change these without affecting logic)
@@ -39,8 +39,8 @@ int main() {
     Vector<Dim> center = zero;
     center[1] = 2.0 * radius; // center.y = 2*radius;
 
-    const double dp = radius * std::sqrt(M_PI / N); // particle spacing 2D
-    //const double dp = radius * pow(4. * M_PI / 3. / N, 1./3.); // particle spacing 3D
+    //const double dp = radius * std::sqrt(M_PI / N); // particle spacing 2D
+    const double dp = radius * pow(4. * M_PI / 3. / N, 1./3.); // particle spacing 3D
     const double h = 1.3 * dp;             // smoothing length
 
     const double CFL = 0.25;                // Courant number
@@ -68,7 +68,7 @@ int main() {
 
     // Fill particles
     //fill_circle(center, radius, particles, N, density, h);
-    fill_ellipsoid(center, {radius, radius}, particles, N, density, h);
+    fill_ellipsoid(center, {radius, radius, radius}, particles, N, density, h);
 
     // Set initial velocity
     for (auto& p : particles) {

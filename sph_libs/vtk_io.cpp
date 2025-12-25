@@ -6,7 +6,8 @@
 #include <iostream>
 #include <sstream>
 
-void save_particles_to_vtk(const std::vector<particle>& particles, const std::string& filename, int timestep) {
+template <int Dim>
+void save_particles_to_vtk(const std::vector<Particle<Dim>>& particles, const std::string& filename, int timestep) {
     std::ofstream vtk_file(filename);
     if (!vtk_file.is_open()) {
         std::cerr << "Error: cannot open file " << filename << std::endl;
@@ -20,7 +21,14 @@ void save_particles_to_vtk(const std::vector<particle>& particles, const std::st
 
     vtk_file << "POINTS " << particles.size() << " float\n";
     for (const auto& p : particles) {
-        vtk_file << std::fixed << std::setprecision(10) << p.pos.x << " " << p.pos.y << " 0.0\n";
+        vtk_file << std::fixed << std::setprecision(10);
+        for (int d = 0; d < Dim; ++d) {
+            vtk_file << p.pos[d] << " ";
+        }
+        for (int d = Dim; d < 3; ++d) {
+            vtk_file << "0.0 ";
+        }
+        vtk_file << "\n";
     }
 
     vtk_file << "CELLS " << particles.size() << " " << particles.size() * 2 << "\n";
@@ -37,7 +45,14 @@ void save_particles_to_vtk(const std::vector<particle>& particles, const std::st
 
     vtk_file << "VECTORS velocity float\n";
     for (const auto& p : particles) {
-        vtk_file << std::fixed << std::setprecision(10) << p.vel.x << " " << p.vel.y << " 0.0\n";
+        vtk_file << std::fixed << std::setprecision(10);
+        for (int d = 0; d < Dim; ++d) {
+            vtk_file << p.vel[d] << " ";
+        }
+        for (int d = Dim; d < 3; ++d) {
+            vtk_file << "0.0 ";
+        }
+        vtk_file << "\n";
     }
 
     vtk_file << "SCALARS density float 1\n";
@@ -60,7 +75,14 @@ void save_particles_to_vtk(const std::vector<particle>& particles, const std::st
 
     vtk_file << "VECTORS grad_c float\n";
     for (const auto& p : particles) {
-        vtk_file << std::fixed << std::setprecision(10) << p.grad_c.x << " " << p.grad_c.y << " 0.0\n";
+        vtk_file << std::fixed << std::setprecision(10);
+        for (int d = 0; d < Dim; ++d) {
+            vtk_file << p.grad_c[d] << " ";
+        }
+        for (int d = Dim; d < 3; ++d) {
+            vtk_file << "0.0 ";
+        }
+        vtk_file << "\n";
     }
 
     vtk_file << "SCALARS kappa float 1\n";
@@ -71,3 +93,6 @@ void save_particles_to_vtk(const std::vector<particle>& particles, const std::st
 
     vtk_file.close();
 }
+
+template void save_particles_to_vtk<2>(const std::vector<Particle<2>>& particles, const std::string& filename, int timestep);
+template void save_particles_to_vtk<3>(const std::vector<Particle<3>>& particles, const std::string& filename, int timestep);

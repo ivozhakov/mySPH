@@ -4,17 +4,18 @@
 
 #include <vector>
 
-#include "vector2d.hpp"
+#include "vector.hpp"
 
-struct particle {
-    Vector2D pos;
-    Vector2D vel;
-    Vector2D force;
+template<int Dim>
+struct Particle {
+    Vector<Dim> pos;
+    Vector<Dim> vel;
+    Vector<Dim> force;
     double density;
     double pressure;
     double mass;
     double c;
-    Vector2D grad_c;
+    Vector<Dim> grad_c;
     double mag_grad_c;
     double kappa;
     double cspm_den;  // For CSPM normalization
@@ -22,8 +23,7 @@ struct particle {
     std::vector<size_t> neighbors;  // Neighbor lists
     // std::vector<size_t> neighbors_CSS;  // For CSS if needed
 
-    particle(double x = 0.0, double y = 0.0)
-        : pos(x, y), vel(0.0, 0.0), force(0.0, 0.0), density(1000.0), pressure(0.0), mass(0.02), c(0.0), grad_c(0.0, 0.0), mag_grad_c(0.0), kappa(0.0), cspm_den(0.0) {}
+    Particle() : density(1000.0), pressure(0.0), mass(0.02), c(0.0), mag_grad_c(0.0), kappa(0.0), cspm_den(0.0) {}
 };
 
 #endif  // PARTICLE_HPP

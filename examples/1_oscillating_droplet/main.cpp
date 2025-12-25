@@ -1,5 +1,5 @@
 // main.cpp
-#include "vector2d.hpp"
+#include "vector.hpp"
 #include "particle.hpp"
 #include "sph_solver.hpp"
 #include "particle_filler.hpp"
@@ -20,27 +20,30 @@
 namespace fs = std::filesystem;
 
 int main() {
+    // Define dimension
+    constexpr int Dim = 2;  // Change to 3 for 3D simulation
+
     // Simulation parameters (change these without affecting logic)
     const int N = 2000;                    // number of particles
     const double density = 1000.0;         // reference density
     const double cs = 10.0;                // sound speed
     const double viscosity = 0.005;        // dynamic viscosity
     const double sigma = 0.072;            // surface tension
-    const Vector2D gravity = {0.0, 0.0}; // gravity acceleration
+    const Vector<Dim> gravity = {0.0, 0.0}; // gravity acceleration
 
     const double box_length = 0.005;       // boundary box size
 
     const double radius = 0.001;           // fill radius
-    const Vector2D center = {0.0, 2.0 * radius}; // fill center
+    const Vector<Dim> center = {0.0, 2.0 * radius}; // fill center
 
     const double dp = radius * std::sqrt(M_PI / N); // particle spacing
     const double h = 1.3 * dp;             // smoothing length
 
-    const double CFL = 0.5;                // Courant number
+    const double CFL = 0.25;                // Courant number
     const double sim_time = 0.1;           // total simulation time in seconds
     const int frames = 1000;               // number of output frames
 
-    const Vector2D initial_vel = {0.0, 0.0}; // initial velocity for all particles
+    const Vector<Dim> initial_vel = {0.0, 0.0}; // initial velocity for all particles
 
     // Derived parameters
     const double max_dt = CFL * h / cs;
@@ -50,17 +53,17 @@ int main() {
     const double dt = (num_steps == 0) ? 0.0 : sim_time / num_steps;
 
     // Create solver with parameters
-    SPHSolver solver(h, dt, density, cs, viscosity, sigma, gravity, box_length);
+    SPHSolver<Dim> solver(h, dt, density, cs, viscosity, sigma, gravity, box_length);
 
     std::cout << "Kernel radius = " << h << std::endl;
     std::cout << "Time step = " << dt << std::endl;
 
     // Particles container
-    std::vector<particle> particles;
+    std::vector<Particle<Dim>> particles;
 
     // Fill particles
     //fill_circle(center, radius, particles, N, density, h);
-    fill_ellipse(center, radius * 1.2, radius / 1.2, particles, N, density, h);
+    fill_ellipsoid(center, {radius * 1.2, radius / 1.2}, particles, N, density, h);
 
     // Set initial velocity
     for (auto& p : particles) {
@@ -69,7 +72,7 @@ int main() {
 
     // Output directory and initial save
     fs::create_directory("output");
-    save_particles_to_vtk(particles, "output/particles_initial.vtk", 0);
+    //save_particles_to_vtk(particles, "output/particles_initial.vtk", 0);
 
     // Energy file
     //std::ofstream file_energy("energy.txt");
@@ -80,7 +83,7 @@ int main() {
     // Initial leapfrog setup
     solver.compute_forces(particles);
     for (auto& p : particles) {
-        Vector2D a = p.force / p.mass;
+        Vector<Dim> a = p.force / p.mass;
         p.vel -= a * (dt / 2.0);
     }
 
@@ -92,7 +95,7 @@ int main() {
         if (step % save_interval == 0) {
             std::ostringstream filename;
             filename << "output/particles_" << std::setw(6) << std::setfill('0') << (step / save_interval) << ".vtk";
-            save_particles_to_vtk(particles, filename.str(), step);
+            save_particles_to_vtk<Dim>(particles, filename.str(), step);
 
             std::cout << "Time: " << step * dt << "/" << sim_time << std::endl;
 

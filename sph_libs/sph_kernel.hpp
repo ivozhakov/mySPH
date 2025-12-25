@@ -2,7 +2,7 @@
 #ifndef SPH_KERNEL_HPP
 #define SPH_KERNEL_HPP
 
-#include "vector2d.hpp"
+#include "vector.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -24,15 +24,20 @@ extern double inv_h_CSS;
 extern double alpha_w_CSS;
 extern double alpha_g_CSS;
 
+template<int Dim>
 void initialize(double smoothing_length);
 
-double norm(const Vector2D& r);
+template<int Dim>
+double wendlandC2(const Vector<Dim>& r);
 
-double wendlandC2(const Vector2D& r);
-Vector2D grad_wendlandC2(const Vector2D& r);
+template<int Dim>
+Vector<Dim> grad_wendlandC2(const Vector<Dim>& r);
 
-double wendlandC2_CSS(const Vector2D& r);
-Vector2D grad_wendlandC2_CSS(const Vector2D& r);
+template<int Dim>
+double wendlandC2_CSS(const Vector<Dim>& r);
+
+template<int Dim>
+Vector<Dim> grad_wendlandC2_CSS(const Vector<Dim>& r);
 
 }  // namespace SPHKernel
 

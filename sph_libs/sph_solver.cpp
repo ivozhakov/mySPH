@@ -5,17 +5,19 @@
 #include "neighbor_finder.hpp"
 #include "sph_kernel.hpp"
 
-SPHSolver::SPHSolver(double smoothing_length, double time_step, double ref_density, double pressure_stiffness, double fluid_viscosity, double surface_tension, Vector2D acceleration, double box_size)
-    : h(smoothing_length), dt(time_step), density0(ref_density), stiffness(pressure_stiffness), viscosity(fluid_viscosity), sigma(surface_tension), gravity(acceleration), box_length(box_size) {
-    SPHKernel::initialize(h);
+template<int Dim>
+SPHSolver<Dim>::SPHSolver(double smoothing_length, double time_step, double ref_density, double sound_velocity, double fluid_viscosity, double surface_tension, Vector<Dim> acceleration, double box_size)
+    : h(smoothing_length), dt(time_step), density0(ref_density), cs(sound_velocity), viscosity(fluid_viscosity), sigma(surface_tension), gravity(acceleration), box_length(box_size) {
+    SPHKernel::initialize<Dim>(h);
 }
 
-void SPHSolver::compute_forces(std::vector<particle>& particles) {
+template<int Dim>
+void SPHSolver<Dim>::compute_forces(std::vector<Particle<Dim>>& particles) {
     for (auto& p : particles) {
-        p.force = {0.0, 0.0};
+        p.force = Vector<Dim>();
     }
     find_neighbors(particles, h);
-    compute_pressure_forces(particles, stiffness, density0, h);
+    compute_pressure_forces(particles, cs, density0, h);
     compute_viscous_forces(particles, viscosity, h);
     compute_surface_tension_CSS(particles, sigma, h);
     for (auto& p : particles) {
@@ -23,7 +25,8 @@ void SPHSolver::compute_forces(std::vector<particle>& particles) {
     }
 }
 
-void SPHSolver::simulate_step(std::vector<particle>& particles) {
+template<int Dim>
+void SPHSolver<Dim>::simulate_step(std::vector<Particle<Dim>>& particles) {
     for (auto& p : particles) {
         p.vel += (p.force / p.mass) * dt;
         p.pos += p.vel * dt;
@@ -32,34 +35,33 @@ void SPHSolver::simulate_step(std::vector<particle>& particles) {
     compute_forces(particles);
 }
 
-double SPHSolver::get_smoothing_length() const { return h; }
-double SPHSolver::get_time_step() const { return dt; }
+template<int Dim>
+double SPHSolver<Dim>::get_smoothing_length() const { return h; }
 
-void SPHSolver::apply_boundaries(std::vector<particle>& particles) const {
+template<int Dim>
+double SPHSolver<Dim>::get_time_step() const { return dt; }
+
+template<int Dim>
+void SPHSolver<Dim>::apply_boundaries(std::vector<Particle<Dim>>& particles) const {
+    //переписать под задание коробки вида (x0, y0, z0, Lx, Ly, Lz);!!!!!!!!!!!!!!!!!!!!!!!!
     for (auto& p : particles) {
-        double k = 1.0;
-        if (p.pos.y < 0) {
-            double delta = 0 - p.pos.y;
-            p.pos.y = 0 + delta;
-            p.vel.y = -p.vel.y * k;
-        }
-
-        if (p.pos.y > box_length) {
-            double delta = p.pos.y - box_length;
-            p.pos.y = box_length - delta;
-            p.vel.y = -p.vel.y * k;
-        }
-
-        if (p.pos.x > box_length) {
-            double delta = p.pos.x - box_length;
-            p.pos.x = box_length - delta;
-            p.vel.x = -p.vel.x * k;
-        }
-
-        if (p.pos.x < -box_length) {
-            double delta = -box_length - p.pos.x;
-            p.pos.x = -box_length + delta;
-            p.vel.x = -p.vel.x * k;
+        double k = 1.0;  // restitution coefficient
+        for (int d = 0; d < Dim; ++d) {
+            double min_d = (d == 1) ? 0.0 : -box_length;  // y (d=1) from 0, others from -box_length
+            double max_d = box_length;
+            if (p.pos[d] < min_d) {
+                double delta = min_d - p.pos[d];
+                p.pos[d] = min_d + delta;
+                p.vel[d] = -p.vel[d] * k;
+            }
+            if (p.pos[d] > max_d) {
+                double delta = p.pos[d] - max_d;
+                p.pos[d] = max_d - delta;
+                p.vel[d] = -p.vel[d] * k;
+            }
         }
     }
 }
+
+template class SPHSolver<2>;
+template class SPHSolver<3>;
