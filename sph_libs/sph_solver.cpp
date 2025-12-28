@@ -6,8 +6,22 @@
 #include "sph_kernel.hpp"
 
 template<int Dim>
-SPHSolver<Dim>::SPHSolver(double smoothing_length, double time_step, double ref_density, double sound_velocity, double fluid_viscosity, double surface_tension, Vector<Dim> acceleration, double box_size)
-    : h(smoothing_length), dt(time_step), density0(ref_density), cs(sound_velocity), viscosity(fluid_viscosity), sigma(surface_tension), gravity(acceleration), box_length(box_size) {
+SPHSolver<Dim>::SPHSolver(double smoothing_length
+                        , double time_step
+                        , double ref_density
+                        , double sound_velocity
+                        , double fluid_viscosity
+                        , double surface_tension
+                        , Vector<Dim> acceleration
+                        , std::pair<Vector<Dim>, Vector<Dim>> box)
+    : h(smoothing_length)
+    , dt(time_step)
+    , density0(ref_density)
+    , cs(sound_velocity)
+    , viscosity(fluid_viscosity)
+    , sigma(surface_tension)
+    , gravity(acceleration)
+    , box(box) {
     SPHKernel::initialize<Dim>(h);
 }
 
@@ -43,12 +57,11 @@ double SPHSolver<Dim>::get_time_step() const { return dt; }
 
 template<int Dim>
 void SPHSolver<Dim>::apply_boundaries(std::vector<Particle<Dim>>& particles) const {
-    //переписать под задание коробки вида (x0, y0, z0, Lx, Ly, Lz);!!!!!!!!!!!!!!!!!!!!!!!!
     for (auto& p : particles) {
         double k = 1.0;  // restitution coefficient
         for (int d = 0; d < Dim; ++d) {
-            double min_d = (d == 1) ? 0.0 : -box_length;  // y (d=1) from 0, others from -box_length
-            double max_d = box_length;
+            double min_d = box.first[d];
+            double max_d = box.second[d];
             if (p.pos[d] < min_d) {
                 double delta = min_d - p.pos[d];
                 p.pos[d] = min_d + delta;
