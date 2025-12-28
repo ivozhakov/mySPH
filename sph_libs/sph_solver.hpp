@@ -28,7 +28,7 @@ public:
             , double fluid_viscosity = 0.0
             , double surface_tension = 0.07
             , Vector<Dim> acceleration = Vector<Dim>()
-            , /*double box_size = 0.005*/ std::pair<Vector<Dim>, Vector<Dim>> box);
+            , /*double box_size = 0.005*/ std::pair<Vector<Dim>, Vector<Dim>> box = {{}, {}});
 
     void compute_forces(std::vector<Particle<Dim>>& particles);
     void simulate_step(std::vector<Particle<Dim>>& particles);

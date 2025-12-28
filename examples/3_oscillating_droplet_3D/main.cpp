@@ -33,6 +33,8 @@ int main() {
     const Vector<Dim> gravity = zero; // gravity acceleration
 
     const double box_length = 0.005;       // boundary box size
+    std::pair<Vector<Dim>, Vector<Dim>> box({-box_length / 2, 0, -box_length / 2}
+                                            , {box_length / 2, box_length, box_length / 2});
 
     const double radius = 0.001;           // fill radius
     Vector<Dim> center = zero;
@@ -56,7 +58,7 @@ int main() {
     const double dt = (num_steps == 0) ? 0.0 : sim_time / num_steps;
 
     // Create solver with parameters
-    SPHSolver<Dim> solver(h, dt, density, cs, viscosity, sigma, gravity, box_length);
+    SPHSolver<Dim> solver(h, dt, density, cs, viscosity, sigma, gravity, box);
 
     std::cout << "Kernel radius = " << h << std::endl;
     std::cout << "Time step = " << dt << std::endl;
