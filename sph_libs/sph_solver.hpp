@@ -9,7 +9,7 @@
 
 template<int Dim>
 class SPHSolver {
-   private:
+private:
     double h;
     double dt;
     double density0;
@@ -17,11 +17,18 @@ class SPHSolver {
     double viscosity;
     double sigma;
     Vector<Dim> gravity;
-    double box_length;
+    std::pair<Vector<Dim>, Vector<Dim>> box;
+    //double box_length;
 
-   public:
-    SPHSolver(double smoothing_length = 0.1, double time_step = 0.00001, double ref_density = 1000.0, double cs = 10.0, double fluid_viscosity = 0.0, double surface_tension = 0.07,
-              Vector<Dim> acceleration = Vector<Dim>(), double box_size = 0.005);
+public:
+    SPHSolver(double smoothing_length = 0.1
+            , double time_step = 0.00001
+            , double ref_density = 1000.0
+            , double cs = 10.0
+            , double fluid_viscosity = 0.0
+            , double surface_tension = 0.07
+            , Vector<Dim> acceleration = Vector<Dim>()
+            , /*double box_size = 0.005*/ std::pair<Vector<Dim>, Vector<Dim>> box = {{}, {}});
 
     void compute_forces(std::vector<Particle<Dim>>& particles);
     void simulate_step(std::vector<Particle<Dim>>& particles);
@@ -29,7 +36,7 @@ class SPHSolver {
     double get_smoothing_length() const;
     double get_time_step() const;
 
-   private:
+private:
     void apply_boundaries(std::vector<Particle<Dim>>& particles) const;
 };
 
